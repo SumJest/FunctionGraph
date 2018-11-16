@@ -61,27 +61,62 @@ void MainWindow::paintEvent(QPaintEvent *e)
         pen.setColor(color.fromRgb(0,0,255));
 
         painter.setPen(pen);
-        bool ex_flag=false;
-        float x = -200;
-        float y;
-        try{
-         y=parse(QString::fromStdString(s_replace(formul,"x",std::to_string(x/10))))*10;
-        }catch(std::exception ex){x=0;y=0;}
-        for(float i = x;i<=200;i+=1)
-        {
-            float ay;
-            try {
-               ay = parse(QString::fromStdString(s_replace(formul,"x",std::to_string(i/10))))*10;
-            } catch (std::exception ex) {
-                x=i;
-                ex_flag=true;
-                continue;
-            }
-            if(ex_flag) y=ay; ex_flag=false;
-            painter.drawLine(x+200,-y+200,i+200,-ay+200);
 
-            x=i;
-            y=ay;
+        if(!ui->checkBox->isChecked())
+        {
+            bool ex_flag=false;
+            float x = -200;
+            float y;
+            try{
+             y=parse(QString::fromStdString(s_replace(formul,"x",std::to_string(x/10))))*10;
+            }catch(std::exception ex){x=0;y=0;}
+            for(float i = x;i<=200;i+=1)
+            {
+                float ay;
+                try {
+                   ay = parse(QString::fromStdString(s_replace(formul,"x",std::to_string(i/10))))*10;
+                } catch (std::exception ex) {
+                    x=i;
+                    ex_flag=true;
+                    continue;
+                }
+                if(ex_flag) y=ay; ex_flag=false;
+                painter.drawLine(x+200,-y+200,i+200,-ay+200);
+
+                x=i;
+                y=ay;
+            }
+        }else
+        {
+            QString data = ui->textEdit->toPlainText();
+            QStringList strList = data.split(QRegExp("[\n]"),QString::SkipEmptyParts);
+            for(int i = 0; i < strList.length();i++)
+            {
+                formul = strList.at(i).toUtf8().constData();
+                adapt(formul);
+                bool ex_flag=false;
+                float x = -200;
+                float y;
+                try{
+                 y=parse(QString::fromStdString(s_replace(formul,"x",std::to_string(x/10))))*10;
+                }catch(std::exception ex){x=0;y=0;}
+                for(float i = x;i<=200;i+=1)
+                {
+                    float ay;
+                    try {
+                       ay = parse(QString::fromStdString(s_replace(formul,"x",std::to_string(i/10))))*10;
+                    } catch (std::exception ex) {
+                        x=i;
+                        ex_flag=true;
+                        continue;
+                    }
+                    if(ex_flag) y=ay; ex_flag=false;
+                    painter.drawLine(x+200,-y+200,i+200,-ay+200);
+
+                    x=i;
+                    y=ay;
+                }
+            }
         }
         d_flag=false;
     }
@@ -95,4 +130,11 @@ void MainWindow::on_pushButton_clicked()
     formul=s;
     d_flag=true;
     update();
+}
+
+void MainWindow::on_checkBox_stateChanged(int arg1)
+{
+    bool checked = ui->checkBox->isChecked();
+    ui->lineEdit->setEnabled(!checked);
+    ui->textEdit->setEnabled(checked);
 }

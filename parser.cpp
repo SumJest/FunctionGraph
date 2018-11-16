@@ -66,14 +66,14 @@ void popFunction(stack<float> *f_stk,stack<char> *c_stk)
     {
         case '^':
             float i;
-            if(modf(a,&i)!=0&&b<0){throw exception("Korenb is otric chisla");}
+            if(modf(a,&i)!=0&&b<0){throw exception();}
             result=pow(b,a);
             break;
         case '*':
             result=b*a;
             break;
         case '/':
-            if(!a){throw exception("Delenie na nol");}
+            if(!a){throw exception();}
             result=b/a;
             break;
         case '+':
