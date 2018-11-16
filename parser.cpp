@@ -195,7 +195,26 @@ float parse(QString ss)
         s_sin="";
         start_pos=s.find(from,0);
     }
+    from = "|";
+    start_pos=s.find(from,0);
+    s_sin = "";
+    while(start_pos!=std::string::npos)
+    {
+        for(int i = start_pos+from.length();i<s.length();i++)
+        {
+            if(s[i]=='|')
+            {
+                float f_sin = abs(parse(QString::fromStdString("("+s_sin+")")));
+                string replacement = to_string(f_sin);
+                replace(s,from+s_sin+from,"("+replacement+")");
 
+                break;
+            }
+            s_sin+=s[i];
+        }
+        s_sin="";
+        start_pos=s.find(from,0);
+    }
     char token,prevToken;
     c_stk.f_push('(');
     prevToken = '(';
