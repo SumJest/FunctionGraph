@@ -57,7 +57,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
     {
         QPen pen;
         QColor color;
-        pen.setWidth(2);
+        pen.setWidth(ui->label_3->text().toInt());
         pen.setColor(color.fromRgb(0,0,255));
 
         painter.setPen(pen);
@@ -137,4 +137,9 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
     bool checked = ui->checkBox->isChecked();
     ui->lineEdit->setEnabled(!checked);
     ui->textEdit->setEnabled(checked);
+}
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    ui->label_3->setText(QString::number(value));
 }
