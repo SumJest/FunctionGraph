@@ -51,25 +51,58 @@ void adapt(std::string& s)
 void MainWindow::paintEvent(QPaintEvent *e)
 {
     QPainter painter(this);
-    painter.drawLine(200,0,200,400);
-    painter.drawLine(0,200,400,200);
+    QColor color;
+    if(ui->checkBox_3->isChecked())
+    {
+
+        painter.fillRect(0,2,400,420,color.fromRgb(255,255,255));
+        for(int i = 0; i <= 400; i +=10)
+        {
+            painter.drawLine(i,20,i,420);
+            painter.drawLine(0,i+20,400,i+20);
+        }
+        QPen pen;
+        pen.setWidth(2);
+        painter.setPen(pen);
+    }
+    painter.drawLine(200,20,200,420);
+    painter.drawLine(0,220,400,220);
+    painter.drawLine(400,20,400,420);
+    painter.drawLine(0,420,400,420);
+    painter.drawLine(1,21,400,21);
+    painter.drawLine(1,21,1,420);
     if(d_flag)
     {
-        QPen pen;
-        QColor color;
-        pen.setWidth(ui->label_3->text().toInt());
-        pen.setColor(color.fromRgb(0,0,255));
+        QPen pens[4];
+        int width = ui->label_3->text().toInt();
+        pens[0].setWidth(width);
+        pens[1].setWidth(width);
+        pens[2].setWidth(width);
+        pens[3].setWidth(width);
+        pens[0].setColor(color.fromRgb(50,60,255));
+        pens[1].setColor(color.fromRgb(255,70,70));
+        pens[2].setColor(color.fromRgb(255,255,0));
+        pens[3].setColor(color.fromRgb(0, 255, 0));
 
-        painter.setPen(pen);
-
+        painter.setPen(pens[rand()%4]);
+        if(!ui->checkBox_2->isChecked())painter.setPen(pens[0]);
         if(!ui->checkBox->isChecked())
         {
+            QString stroke = ui->lineEdit->text();
+            std::string s = stroke.toUtf8().constData();
+            adapt(s);
+            formul=s;
             bool ex_flag=false;
             float x = -200;
             float y;
-            try{
-             y=parse(QString::fromStdString(s_replace(formul,"x",std::to_string(x/10))))*10;
-            }catch(std::exception ex){x=0;y=0;}
+            bool it = true;
+            while(it)
+            {
+                it = false;
+                try{
+                 y=parse(QString::fromStdString(s_replace(formul,"x",std::to_string(x/10))))*10;
+                }catch(std::exception ex){x++;y=0;it=true;}
+            }
             for(float i = x;i<=200;i+=1)
             {
                 float ay;
@@ -81,7 +114,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
                     continue;
                 }
                 if(ex_flag) y=ay; ex_flag=false;
-                painter.drawLine(x+200,-y+200,i+200,-ay+200);
+                painter.drawLine(x+200,-y+220,i+200,-ay+220);
 
                 x=i;
                 y=ay;
@@ -92,14 +125,21 @@ void MainWindow::paintEvent(QPaintEvent *e)
             QStringList strList = data.split(QRegExp("[\n]"),QString::SkipEmptyParts);
             for(int i = 0; i < strList.length();i++)
             {
+                painter.setPen(pens[i%4]);
+                if(!ui->checkBox_2->isChecked())painter.setPen(pens[0]);
                 formul = strList.at(i).toUtf8().constData();
                 adapt(formul);
                 bool ex_flag=false;
                 float x = -200;
                 float y;
-                try{
-                 y=parse(QString::fromStdString(s_replace(formul,"x",std::to_string(x/10))))*10;
-                }catch(std::exception ex){x=0;y=0;}
+                bool it = true;
+                while(it)
+                {
+                    it = false;
+                    try{
+                     y=parse(QString::fromStdString(s_replace(formul,"x",std::to_string(x/10))))*10;
+                    }catch(std::exception ex){x++;y=0;it=true;}
+                }
                 for(float i = x;i<=200;i+=1)
                 {
                     float ay;
@@ -111,7 +151,7 @@ void MainWindow::paintEvent(QPaintEvent *e)
                         continue;
                     }
                     if(ex_flag) y=ay; ex_flag=false;
-                    painter.drawLine(x+200,-y+200,i+200,-ay+200);
+                    painter.drawLine(x+200,-y+220,i+200,-ay+220);
 
                     x=i;
                     y=ay;
@@ -123,11 +163,6 @@ void MainWindow::paintEvent(QPaintEvent *e)
 }
 void MainWindow::on_pushButton_clicked()
 {
-
-    QString stroke = ui->lineEdit->text();
-    std::string s = stroke.toUtf8().constData();
-    adapt(s);
-    formul=s;
     d_flag=true;
     update();
 }
@@ -142,4 +177,16 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
 void MainWindow::on_horizontalSlider_valueChanged(int value)
 {
     ui->label_3->setText(QString::number(value));
+}
+
+void MainWindow::on_checkBox_3_stateChanged(int arg1)
+{
+    update();
+}
+
+void MainWindow::on_action_triggered()
+{
+    QMessageBox mbox;
+    mbox.setText("Автор: Роман Фахрутдинов\nE-mail: roman@sumjest.ru");
+    mbox.exec();
 }
